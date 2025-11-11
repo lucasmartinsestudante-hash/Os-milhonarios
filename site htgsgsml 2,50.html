@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Se inscreva — Conteúdo Tech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-1: #0b0710;
+      --bg-2: #1c0730;
+      --accent-purple: #8b4fe0;
+      --accent-gold: #d4b24a;
+      --muted: rgba(255,255,255,0.75);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:radial-gradient(1000px 400px at 10% 10%, rgba(139,79,224,0.12), transparent),
+                 linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      font-family:Poppins,system-ui,Arial;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:36px;
+    }
+    .container{width:100%;max-width:1000px}
+    .panel{background:rgba(255,255,255,0.03);border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+    h1{font-family:Orbitron,sans-serif;font-size:26px;margin:0;color:var(--accent-gold)}
+    p.lead{color:var(--muted);margin-top:8px}
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:12px 18px;border-radius:10px;border:0;cursor:pointer;font-weight:700;font-family:Orbitron,sans-serif}
+    .btn-cta{background:linear-gradient(90deg,var(--accent-gold), #f3d86a);color:#111}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted)}
+    .loader-box{margin-top:18px;display:none;gap:12px;align-items:center}
+    .progress{width:100%;height:12px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent-purple),var(--accent-gold));transition:width 0.25s linear}
+    .status{font-size:13px;color:var(--muted);margin-top:6px}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:30px}
+    .card{background:rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .3s,box-shadow .3s}
+    .card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.5)}
+    .card img{width:100%;height:160px;object-fit:cover}
+    .card .meta{padding:12px}
+    .card .title{font-weight:700}
+    .card .desc{color:var(--muted);font-size:13px;margin-top:4px}
+    footer{text-align:center;margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <h1>Se inscreva para desbloquear o conteúdo</h1>
+      <p class="lead">se inscreva e aguarde para liberar o conteúdo exclusivo.</p>
+
+      <div class="actions">
+        <button id="subscribeBtn" class="btn btn-cta">Se inscrever</button>
+      </div>
+
+      <div id="loader" class="loader-box">
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+        <div class="status" id="statusText">Carregando...</div>
+      </div>
+
+      <div id="galleryArea" style="display:none">
+        <div class="gallery" id="gallery"></div>
+      </div>
+    </div>
+    <footer>Melhores paineis e hacks são aqui 🇧🇷 </footer>
+  </div>
+
+  <script>
+    const channelURL = 'https://youtube.com/@mt7legitytofc?si=6-qILcKMFSbd2QPw';
+    const firstCardLink = 'https://youtu.be/oBxmO6lQtzc?si=V8U0vmEN2eEf87mz';
+    const items = [
+      { img: 'https://i.postimg.cc/BQPrj09Z/IMG-20251111-002926-176.jpg', title: 'FAKE LAG V24 😱', desc: 'Melhor fake lag atualizado com metodo gratis', link: firstCardLink },
+      { img: 'https://i.postimg.cc/g2639wPs/IMG-20251111-002856-437.jpg', title: 'FFH4X INJECTOR 👺', desc: 'Melhor painel brutal para dar full capa na rankeada', link: 'https://www.instagram.com/' },
+      { img: 'https://i.postimg.cc/Kj6sP1Sz/IMG-20251111-002940-572.jpg', title: 'PAINEL HEDTRICK 🥷', desc: 'Melhor painel headtrick ant ban para auxiliar a sua miral .', link: 'https://www.google.com/' }
+    ];
+
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const loader = document.getElementById('loader');
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('statusText');
+    const galleryArea = document.getElementById('galleryArea');
+    const gallery = document.getElementById('gallery');
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioCtx();
+
+    function playSound(freq, duration) {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.03, audioCtx.currentTime);
+      o.start();
+      o.stop(audioCtx.currentTime + duration);
+    }
+
+    function buildGallery(){
+      gallery.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src=\"${item.img}\" alt=\"${item.title}\"/>
+          <div class=\"meta\">
+            <div class=\"title\">${item.title}</div>
+            <div class=\"desc\">${item.desc}</div>
+          </div>`;
+        card.addEventListener('click', ()=> window.open(item.link,'_blank'));
+        gallery.appendChild(card);
+      });
+    }
+
+    function revealAfterDelay(){
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      playSound(440, 0.2);
+      loader.style.display = 'flex';
+      let start = Date.now();
+      const total = 10000;
+      const timer = setInterval(()=>{
+        const elapsed = Date.now() - start;
+        const pct = Math.min(100, Math.round((elapsed / total) * 100));
+        progressBar.style.width = pct + '%';
+        if(pct === 100){
+          clearInterval(timer);
+          loader.style.display = 'none';
+          galleryArea.style.display = 'block';
+          playSound(880, 0.3);
+        }
+      }, 100);
+    }
+
+    subscribeBtn.addEventListener('click', ()=>{
+      window.open(channelURL, '_blank');
+      buildGallery();
+      revealAfterDelay();
+    });
+  </script>
+</body>
+</html>
